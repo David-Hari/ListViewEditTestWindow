@@ -102,8 +102,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
                 NMLVDISPINFOA* plvdi = (NMLVDISPINFOA*)lParam;
                 HWND hEdit = (HWND)SendMessageA(plvdi->hdr.hwndFrom, LVM_GETEDITCONTROL, 0, 0L);
                 if (hEdit) {
-                    // It works without the following line
-                    originalEditBoxProc = (WNDPROC)SetWindowLongPtrA(hEdit, GWLP_WNDPROC, (LONG_PTR)EditBoxProc);
+                    // Workaround is to subclass using the "W" version of the function, but I don't know why this works
+                    originalEditBoxProc = (WNDPROC)SetWindowLongPtrW(hEdit, GWLP_WNDPROC, (LONG_PTR)EditBoxProc);
                 }
             }
             else if (((LPNMHDR)lParam)->code == LVN_ENDLABELEDITA) {
