@@ -98,24 +98,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
     if (hWnd == mainWindow) {
         switch (message) {
         case WM_NOTIFY:
-            if (((LPNMHDR)lParam)->code == LVN_BEGINLABELEDIT) {
-                NMLVDISPINFO* plvdi = (NMLVDISPINFO*)lParam;
-                HWND hEdit = ListView_GetEditControl(plvdi->hdr.hwndFrom);
+            if (((LPNMHDR)lParam)->code == LVN_BEGINLABELEDITA) {
+                NMLVDISPINFOA* plvdi = (NMLVDISPINFOA*)lParam;
+                HWND hEdit = (HWND)SendMessageA(plvdi->hdr.hwndFrom, LVM_GETEDITCONTROL, 0, 0L);
                 if (hEdit) {
                     // It works without the following line
-                    originalEditBoxProc = (WNDPROC)SetWindowLongPtr(hEdit, GWLP_WNDPROC, (LONG_PTR)EditBoxProc);
+                    originalEditBoxProc = (WNDPROC)SetWindowLongPtrA(hEdit, GWLP_WNDPROC, (LONG_PTR)EditBoxProc);
                 }
+            }
+            else if (((LPNMHDR)lParam)->code == LVN_ENDLABELEDITA) {
+                NMLVDISPINFOA* plvdi = (NMLVDISPINFOA*)lParam;
+                MessageBoxA(hWnd, plvdi->item.pszText, "Text entered in edit box", MB_OK | MB_ICONINFORMATION);
             }
             break;
         case WM_DESTROY:
             PostQuitMessage(0);
             break;
         default:
-            return DefWindowProc(hWnd, message, wParam, lParam);
+            return DefWindowProcA(hWnd, message, wParam, lParam);
         }
         return 0;
     }
-    return DefWindowProc(hWnd, message, wParam, lParam);
+    return DefWindowProcA(hWnd, message, wParam, lParam);
 }
 
 LRESULT CALLBACK EditBoxProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
